@@ -11,6 +11,7 @@ import CoreData
 final class DiaryDetailViewController: UIViewController {
     private let diary: Diary
     private var keyboardManager: KeyboardManager?
+    let numberOfLines = 0
     
     private let textView: UITextView = {
         let view: UITextView = UITextView()
@@ -112,48 +113,105 @@ final class DiaryDetailViewController: UIViewController {
 }
 
 extension DiaryDetailViewController: UITextViewDelegate {
-    func updateTitle(by textView: UITextView) -> String {
-        let textViewWidth = Int(textView.frame.width)
-        let textViewFontSize = 17
-        let titleLength: Int = textViewWidth / textViewFontSize
-//        print(textViewWidth)
-//        print(textViewFontSize)
-//        print(titleLength)
-        let title = String(textView.text.prefix(Int(titleLength)))
-        
-        return title
-    }
-    
-    func updateBody(by textView: UITextView) -> String {
-        let textViewWidth = Int(textView.frame.width)
-        let textViewFontSize = 17
-        let startBodyLength: Int = textViewWidth / textViewFontSize
-        let endIndex = textView.text.index(textView.text.endIndex, offsetBy: -startBodyLength)
-        let body = String(textView.text.suffix(from: endIndex))
-
-        return body
-    }
-    
+//    func updateTitle(by textView: UITextView) -> String {
+//        let textViewWidth = Int(textView.frame.width)
+//        let textViewFontSize = 17
+//        let titleLength: Int = textViewWidth / textViewFontSize
+//        let title = String(textView.text.prefix(Int(titleLength)))
+//
+//        return title
+//    }
+    //23
+//    func updateBody(by textView: UITextView) -> String {
+//        let textViewWidth = Int(textView.frame.width * 2)
+//        let textViewFontSize = 17
+//        let startBodyLength: Int = textViewWidth / textViewFontSize
+//        let endIndex = textView.text.index(textView.text.endIndex, offsetBy: -startBodyLength)
+//        let body = String(textView.text.suffix(from: endIndex))
+//        print(body)
+//        return body
+//    }
+//
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        <#code#>
+        print(textView.text)
+        let currentText = textView.text ?? ""
+//        guard let stringRange = Range(range, in: currentText) else {
+//            return true
+//        }
+//        print(currentText.replacingCharacters(in: stringRange, with: text).count)
+        
+        let numberOfLines = textView.contentSize.height/textView.font!.lineHeight
+        print(numberOfLines)
+        if numberOfLines < 2 {
+            diary.title = textView.text
+            print("title = \(diary.title as Any)")
+        } else {
+            let count = diary.title!.count
+            let endIndex = textView.text.index(textView.text.endIndex, offsetBy: -count)
+//            let body = String(textView.text.suffix(from: endIndex))
+            let body = String(textView.text.suffix(textView.text.count - count + 1))
+            diary.body = body
+            print("body = \(diary.body as Any)")
+        }
+
+        return true
+    }
+    
+//    func printNumberOfLine(_ textView: UITextView) {
+//        let numberOfLines = textView.contentSize.height/textView.font!.lineHeight
+//        if numberOfLines < 2 {
+//            diary.title = textView.text
+//        } else {
+//            let count = diary.title!.count
+//            diary.body = textView.text.index
+//        }
+//
+//    }
+    
+    func textViewDidChangeSelection(_ textView: UITextView) {
+//         print(textView.text)
+//        let currentText = textView.text ?? ""
+//        guard let stringRange = Range(range, in: currentText) else {
+//            return true
+//        }
+//        print(currentText.replacingCharacters(in: stringRange, with: text).count)
+        
+        let numberOfLines = textView.contentSize.height/textView.font!.lineHeight
+        print(numberOfLines)
+        if numberOfLines < 2 {
+            diary.title = textView.text
+            print("title = \(diary.title as Any)")
+        } else {
+            let count = diary.title!.count
+            let endIndex = textView.text.index(textView.text.endIndex, offsetBy: -count)
+            let body = String(textView.text.suffix(textView.text.count - count + 1))
+            diary.body = body
+            print("body = \(diary.body as Any)")
+        }
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
 //        diary.title = updateTitle(by: textView)
 //
 //        diary.body = updateBody(by: textView)
-        guard let text = textView.text else { return }
-        let lines = text.components(separatedBy: "\n")
-        if lines.count > 0 {
-            let title = lines[0]
-            diary.title = title
-            var content = ""
-            if lines.count > 1 {
-                for iii in 1..<lines.count {
-                    content += lines[iii]
-                }
-            }
-            diary.body = content
+//        guard let text = textView.text else { return }
+//        let lines = text.components(separatedBy: "\n")
+//        if lines.count > 0 {
+//            let title = lines[0]
+//            diary.title = title
+//            var content = ""
+//            if lines.count > 1 {
+//                for iii in 1..<lines.count {
+//                    content += lines[iii]
+//                }
+//            }
+//            diary.body = content
+//        }
+        guard let title = diary.title,
+              let body = diary.body else { return }
+        if diary.title != nil, diary.body != nil {
+            diary.title = title + ""
+            diary.body = body + ""
         }
         
         print("title = \(String(describing: diary.title))")
@@ -161,3 +219,13 @@ extension DiaryDetailViewController: UITextViewDelegate {
         CoreDataManager.shared.update(newDiary: diary)
     }
 }
+
+//extension UITextView {
+//    func numberOfLine() -> Int {
+//
+//        let size = CGSize(width: frame.width, height: .infinity)
+//        let estimatedSize = sizeThatFits(size)
+//
+//        return Int(estimatedSize.height / (self.font!.lineHeight))
+//    }
+//}

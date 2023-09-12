@@ -55,7 +55,7 @@ final class DiaryListViewController: UIViewController {
         super.viewDidAppear(animated)
         self.diaries = CoreDataManager.shared.fetchAllDiaries()
         diaries.forEach { diary in
-            if diary.body == nil {
+            if diary.body == nil && diary.title == nil {
                 CoreDataManager.shared.delete(diary: diary.identifier!)
             }
         }
